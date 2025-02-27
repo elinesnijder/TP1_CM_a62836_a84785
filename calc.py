@@ -93,11 +93,6 @@ class CalculatorApp(ft.Container):
                 ),
             ]
         )
-            #         expand=True,
-            #     ),
-            # ],
-            # expand=True,
-            # alignment="center",
 
     def button_clicked(self, e):
         data = e.control.data

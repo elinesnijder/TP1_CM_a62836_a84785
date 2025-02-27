@@ -1,16 +1,17 @@
 import flet as ft
 
+
 class CalcButton(ft.ElevatedButton):
     def __init__(self, text, button_clicked, expand=2):
-        super().__init__(
+        super().__init__(            
             text=text,
             on_click=button_clicked,
             expand=expand,
             height=70,  
             width=70,   
-            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
-        )
-        self.data = text
+            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))) 
+        self.data = text 
+
 
 class DigitButton(CalcButton):
     def __init__(self, text, button_clicked, expand=1):
@@ -18,25 +19,27 @@ class DigitButton(CalcButton):
         self.bgcolor = ft.colors.GREY
         self.color = ft.colors.WHITE
 
+
 class ActionButton(CalcButton):
     def __init__(self, text, button_clicked):
         CalcButton.__init__(self, text, button_clicked)
         self.bgcolor = ft.colors.TEAL_ACCENT_700
         self.color = ft.colors.WHITE
-        
+
+
 class ExtraActionButton(CalcButton):
     def __init__(self, text, button_clicked):
         CalcButton.__init__(self, text, button_clicked)
         self.bgcolor = ft.colors.BLUE_GREY_100
         self.color = ft.colors.BLACK
-        
+
+
 class CalculatorApp(ft.Container):
+    # application's root control (i.e. "view") containing all other controls
     def __init__(self):
         super().__init__()
         self.reset()
-
-        self.result = ft.Text(value="0", color=ft.colors.WHITE, size=40)  # Texto maior para melhor visualização
-        self.expand = True
+        self.result = ft.Text(value="0", color=ft.colors.BLACK, size=75)
         self.width = "100%"
         self.height = "100%"
         self.bgcolor = ft.colors.GREY_50
@@ -91,7 +94,7 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
                 ),
-            ] 
+            ]
         )
 
     def button_clicked(self, e):
