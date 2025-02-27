@@ -91,13 +91,8 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
                 ),
-            ]
+            ] 
         )
-            #         expand=True,
-            #     ),
-            # ],
-            # expand=True,
-            # alignment="center",
 
     def button_clicked(self, e):
         data = e.control.data
