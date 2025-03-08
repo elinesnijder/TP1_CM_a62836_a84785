@@ -1,6 +1,4 @@
 import flet as ft
-from sympy import sympify, N
-
 
 class CalcButton(ft.ElevatedButton):
     def __init__(self, text, button_clicked, expand=2):
@@ -117,21 +115,24 @@ class CalculatorApp(ft.Container):
 
         elif data == "=":
             try:
-                self.result.value = str(N(sympify(self.expression), 2))
+                result = eval(self.expression)
+                self.result.value = str(round(result, 2))
             except:
                 self.result.value = "Error"
             self.reset()
 
         elif data == "%":
             try:
-                self.result.value = str(N(sympify(self.expression) / 100, 2))
+                result = eval(self.expression) / 100
+                self.result.value = str(round(result, 2))
             except:
                 self.result.value = "Error"
             self.reset()
 
         elif data == "+/-":
             try:
-                self.result.value = str(N(-sympify(self.result.value), 2))
+                result = -float(self.result.value)
+                self.result.value = str(round(result, 2)) #arredondamento
                 self.expression = self.result.value
             except:
                 self.result.value = "Error"
