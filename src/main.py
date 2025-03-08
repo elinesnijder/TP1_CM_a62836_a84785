@@ -39,6 +39,7 @@ class CalculatorApp(ft.Container):
         super().__init__()
         self.reset()
         self.result = ft.Text(value="0", color=ft.colors.BLACK, size=75)
+        self.expression_text = ft.Text(value="", color=ft.colors.BLACK, size=25) #campo em cima
         self.width = "100%"
         self.height = "100%"
         self.bgcolor = ft.colors.GREY_50
@@ -49,6 +50,7 @@ class CalculatorApp(ft.Container):
         
         self.content = ft.Column(
             controls=[
+                ft.Row(controls=[self.expression_text], alignment="end"),
                 ft.Row(controls=[self.result], alignment="end"),
                 ft.Row(
                     controls=[
@@ -119,7 +121,7 @@ class CalculatorApp(ft.Container):
                 self.result.value = str(round(result, 2))
             except:
                 self.result.value = "Error"
-            self.reset()
+            self.update_expression_display()
 
         elif data == "%":
             try:
@@ -127,7 +129,7 @@ class CalculatorApp(ft.Container):
                 self.result.value = str(round(result, 2))
             except:
                 self.result.value = "Error"
-            self.reset()
+            self.update_expression_display()
 
         elif data == "+/-":
             try:
@@ -137,8 +139,11 @@ class CalculatorApp(ft.Container):
             except:
                 self.result.value = "Error"
 
-        self.update()
+        self.update_expression_display()
 
+    def update_expression_display(self):
+        self.expression_text.value = self.expression
+        self.update()
 
     def reset(self):
         self.expression = ""
