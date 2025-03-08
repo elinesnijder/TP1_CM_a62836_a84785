@@ -117,21 +117,21 @@ class CalculatorApp(ft.Container):
 
         elif data == "=":
             try:
-                self.result.value = str(N(sympify(self.expression)))
+                self.result.value = str(N(sympify(self.expression), 2))
             except:
                 self.result.value = "Error"
             self.reset()
 
         elif data == "%":
             try:
-                self.result.value = str(N(sympify(self.expression) / 100))
+                self.result.value = str(N(sympify(self.expression) / 100, 2))
             except:
                 self.result.value = "Error"
             self.reset()
 
         elif data == "+/-":
             try:
-                self.result.value = str(N(-sympify(self.result.value)))
+                self.result.value = str(N(-sympify(self.result.value), 2))
                 self.expression = self.result.value
             except:
                 self.result.value = "Error"
