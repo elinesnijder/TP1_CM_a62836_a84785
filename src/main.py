@@ -180,6 +180,13 @@ class CalculatorApp(ft.Container):
                 self.expression = self.result.value
             except:
                 self.result.value = "Error"
+                
+        elif data == "√":
+            try:
+                result = math.sqrt(float(self.result.value.replace(" ", "")))
+                self.result.value = self.format_number(str(round(result, 2)))
+            except:
+                self.result.value = "Error"
 
         self.update_expression_display()
         
