@@ -191,6 +191,13 @@ class CalculatorApp(ft.Container):
         elif data == "^":
             self.expression += "**"
             self.result.value = self.format_number(self.expression)
+            
+        elif data == "log":
+            try:
+                result = math.log10(float(self.result.value.replace(" ", "")))
+                self.result.value = self.format_number(str(round(result, 2)))
+            except:
+                self.result.value = "Error"
 
         self.update_expression_display()
         
