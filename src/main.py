@@ -41,7 +41,10 @@ class CalculatorApp(ft.Container):
         super().__init__()
         self.reset()
         self.result = ft.Text(value="0", color=ft.colors.BLACK, size=75)
-        self.expression_text = ft.Text(value="", color=ft.colors.BLACK, size=25) #campo em cima
+        self.expression_text = ft.Text(value="", color=ft.colors.GREY, size=25) #campo em cima
+        self.history = [] #armazenamento do histórico
+        self.history_list = ft.Column(controls=[], visible=False)
+        
         self.width = "100%"
         self.height = "100%"
         self.bgcolor = ft.colors.GREY_50
@@ -50,13 +53,13 @@ class CalculatorApp(ft.Container):
         self.alignment = ft.alignment.center
         self.expression = ""
         self.last_result = None
-        
         self.show_extra_buttons = False #botoes extras
         
         self.content = ft.Column(
             controls=[
                 ft.Row(controls=[self.expression_text], alignment="end"),
                 ft.Row(controls=[self.result], alignment="end"),
+                ft.Row(controls=[self.history_list]),
                 #row de botoes extra
                 ft.Row(
                     controls=[
@@ -75,6 +78,7 @@ class CalculatorApp(ft.Container):
                         ExtraActionButton(text="CE", button_clicked=self.button_clicked),  
                         ExtraActionButton(text="←", button_clicked=self.button_clicked),  
                         ExtraActionButton(text="↑", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="H", button_clicked=self.button_clicked),
                     ]
                 ),
                 ft.Row(
@@ -187,6 +191,8 @@ class CalculatorApp(ft.Container):
                 result = eval(self.expression.replace(" ", ""))
                 self.result.value = self.format_number(str(round(result, 2)))
                 self.last_result = result
+                self.history_list.controls.append(ft.Text(f"{self.expression} = {self.result.value}"))
+                self.update()
             except:
                 self.result.value = "Error"
                 self.last_result = None
@@ -247,6 +253,9 @@ class CalculatorApp(ft.Container):
                 self.result.value = self.format_number(str(round(result, 2)))
             except:
                 self.result.value = "Error"
+        elif data == "H":
+            self.history_list.visible = not self.history_list.visible
+            self.update()
 
         self.update_expression_display()
         
