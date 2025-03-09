@@ -57,9 +57,17 @@ class CalculatorApp(ft.Container):
                 ft.Row(
                     controls=[
                         ExtraActionButton(text="AC", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="+/-", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="%", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="CE", button_clicked=self.button_clicked),  
+                        ExtraActionButton(text="⬅️", button_clicked=self.button_clicked),  
                         ActionButton(text="/", button_clicked=self.button_clicked),
+                    ]
+                ),
+                ft.Row(
+                    controls=[
+                        ExtraActionButton(text="(", button_clicked=self.button_clicked),  
+                        ExtraActionButton(text=")", button_clicked=self.button_clicked),  
+                        ExtraActionButton(text="%", button_clicked=self.button_clicked),
+                        ActionButton(text="*", button_clicked=self.button_clicked),
                     ]
                 ),
                 ft.Row(
