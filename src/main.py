@@ -187,6 +187,10 @@ class CalculatorApp(ft.Container):
                 self.result.value = self.format_number(str(round(result, 2)))
             except:
                 self.result.value = "Error"
+        
+        elif data == "^":
+            self.expression += "**"
+            self.result.value = self.format_number(self.expression)
 
         self.update_expression_display()
         
