@@ -1,4 +1,5 @@
 import flet as ft
+import math
 import re
 
 class CalcButton(ft.ElevatedButton):
@@ -54,6 +55,16 @@ class CalculatorApp(ft.Container):
             controls=[
                 ft.Row(controls=[self.expression_text], alignment="end"),
                 ft.Row(controls=[self.result], alignment="end"),
+                ft.Row(
+                    controls=[
+                        ActionButton(text="√", button_clicked=self.button_clicked),
+                        ActionButton(text="^", button_clicked=self.button_clicked),  
+                        ActionButton(text="log", button_clicked=self.button_clicked),  
+                        ActionButton(text="exp", button_clicked=self.button_clicked),
+                        ActionButton(text="!", button_clicked=self.button_clicked),
+                        ActionButton(text="|x|", button_clicked=self.button_clicked),
+                    ]
+                ),
                 ft.Row(
                     controls=[
                         ExtraActionButton(text="AC", button_clicked=self.button_clicked),
