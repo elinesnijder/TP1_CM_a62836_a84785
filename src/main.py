@@ -47,6 +47,7 @@ class CalculatorApp(ft.Container):
         self.padding = 20
         self.alignment = ft.alignment.center
         self.expression = ""
+        self.last_result = None
         
         self.content = ft.Column(
             controls=[
@@ -102,7 +103,11 @@ class CalculatorApp(ft.Container):
             self.reset()
 
         elif data in ("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."):
-            if self.result.value == "0" or self.new_operand == True:
+            if self.last_result is not None:  # Se houver um resultado anterior
+                self.result.value = data  # Reinicia com o novo número
+                self.expression = data
+                self.last_result = None  
+            elif self.result.value == "0" or self.new_operand == True:
                 self.result.value = data
                 self.expression = data
                 self.new_operand = False
@@ -111,6 +116,9 @@ class CalculatorApp(ft.Container):
                 self.expression += data
 
         elif data in ("+", "-", "*", "/", "(", ")"):
+            if self.last_result is not None:  # Se houver um resultado antes
+                self.expression = self.result.value  # Continua do último resultado
+                self.last_result = None 
             self.result.value += data
             self.expression += data
             self.new_operand = False
@@ -119,8 +127,10 @@ class CalculatorApp(ft.Container):
             try:
                 result = eval(self.expression)
                 self.result.value = str(round(result, 2))
+                self.last_result = result
             except:
                 self.result.value = "Error"
+                self.last_result = None
             self.update_expression_display()
 
         elif data == "%":
@@ -148,7 +158,6 @@ class CalculatorApp(ft.Container):
     def reset(self):
         self.expression = ""
         self.new_operand = True
-
 
 def main(page: ft.Page):
     page.title = "Calc App"
