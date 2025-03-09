@@ -111,6 +111,9 @@ class CalculatorApp(ft.Container):
             self.result.value = "0"
             self.reset()
 
+        elif data == "CE":  #apaga o que foi inserido
+            self.result.value = "0"
+        
         elif data == "⬅️":  
             if self.result.value and self.result.value != "0":
                 self.result.value = self.result.value[:-1] #elimina ultimo caractere
