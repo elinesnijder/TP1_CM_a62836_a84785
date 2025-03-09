@@ -90,7 +90,7 @@ class CalculatorApp(ft.Container):
                         DigitButton(text="7", button_clicked=self.button_clicked),
                         DigitButton(text="8", button_clicked=self.button_clicked),
                         DigitButton(text="9", button_clicked=self.button_clicked),
-                        ActionButton(text="×", button_clicked=self.button_clicked),
+                        ActionButton(text="*", button_clicked=self.button_clicked),
                     ]
                 ),
                 ft.Row(
@@ -156,14 +156,32 @@ class CalculatorApp(ft.Container):
             self.result.value = self.format_number(self.expression)
 
         elif data in ("+", "-", "*", "/", "(", ")"):
-            if self.last_result is not None:  # Se houver um resultado antes
-                self.expression = self.result.value.replace(" ", "")   # Continua do último resultado
+            #ultimo caractere é operando ou ()
+            if self.expression and self.expression[-1] in ("+", "-", "*", "/"):
+                #se for, não permite adicionar mais
+                #muda de operando se clicar noutro
+                if data in ("+", "-", "*", "/"):
+                    self.expression = self.expression[:-1] + data
+                    self.result.value = self.format_number(self.expression)
+                    self.update_expression_display()
+                return
+            
+            # último caractere é um parêntese de abertura
+            if self.expression and self.expression[-1] == "(" and data == "(":
+                return  #nao adiciona parênteses de abertura consecutivos
+
+            # último caractere é um parêntese de fechamento
+            if self.expression and self.expression[-1] == ")" and data == ")":
+                return  #nao adiciona parênteses de fechamento consecutivos
+            
+            if self.last_result is not None:
+                self.expression = self.result.value.replace(" ", "")
                 self.last_result = None 
             self.result.value += data
             self.expression += data
             self.result.value = self.format_number(self.expression)
             self.new_operand = False
-
+            
         elif data == "=":
             try:
                 result = eval(self.expression.replace(" ", ""))
@@ -198,7 +216,7 @@ class CalculatorApp(ft.Container):
                 self.result.value = "Error"
         
         elif data == "^":
-            self.expression += "**"
+            self.expression += "^"
             self.result.value = self.format_number(self.expression)
             
         elif data == "log":
