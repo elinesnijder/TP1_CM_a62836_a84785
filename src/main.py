@@ -107,26 +107,28 @@ class CalculatorApp(ft.Container):
                 self.result.value = data  # Reinicia com o novo número
                 self.expression = data
                 self.last_result = None  
-            elif self.result.value == "0" or self.new_operand == True:
+            elif self.result.value == "0" or self.new_operand:
                 self.result.value = data
                 self.expression = data
                 self.new_operand = False
             else:
                 self.result.value += data
                 self.expression += data
+            self.result.value = self.format_number(self.expression)
 
         elif data in ("+", "-", "*", "/", "(", ")"):
             if self.last_result is not None:  # Se houver um resultado antes
-                self.expression = self.result.value  # Continua do último resultado
+                self.expression = self.result.value.replace(" ", "")   # Continua do último resultado
                 self.last_result = None 
             self.result.value += data
             self.expression += data
+            self.result.value = self.format_number(self.expression)
             self.new_operand = False
 
         elif data == "=":
             try:
-                result = eval(self.expression)
-                self.result.value = str(round(result, 2))
+                result = eval(self.expression.replace(" ", ""))
+                self.result.value = self.format_number(str(round(result, 2)))
                 self.last_result = result
             except:
                 self.result.value = "Error"
@@ -135,21 +137,32 @@ class CalculatorApp(ft.Container):
 
         elif data == "%":
             try:
-                result = eval(self.expression) / 100
-                self.result.value = str(round(result, 2))
+                result = eval(self.expression.replace(" ", "")) / 100
+                self.result.value = self.format_number(str(round(result, 2)))
             except:
                 self.result.value = "Error"
             self.update_expression_display()
 
         elif data == "+/-":
             try:
-                result = -float(self.result.value)
-                self.result.value = str(round(result, 2)) #arredondamento
+                result = -float(self.result.value.replace(" ", ""))
+                self.result.value = self.format_number(str(round(result, 2))) #arredondamento
                 self.expression = self.result.value
             except:
                 self.result.value = "Error"
 
         self.update_expression_display()
+        
+    def format_number(self, number_str):
+        try:
+            if "." in number_str:
+                int_part, decimal_part = number_str.split(".")
+                formatted_int = f"{int(int_part):,}".replace(",", " ")
+                return f"{formatted_int}.{decimal_part}"
+            else:
+                return f"{int(number_str):,}".replace(",", " ")
+        except ValueError:
+            return number_str
 
     def update_expression_display(self):
         self.expression_text.value = self.expression
