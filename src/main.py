@@ -51,10 +51,13 @@ class CalculatorApp(ft.Container):
         self.expression = ""
         self.last_result = None
         
+        self.show_extra_buttons = False #botoes extras
+        
         self.content = ft.Column(
             controls=[
                 ft.Row(controls=[self.expression_text], alignment="end"),
                 ft.Row(controls=[self.result], alignment="end"),
+                #row de botoes extra
                 ft.Row(
                     controls=[
                         ActionButton(text="√", button_clicked=self.button_clicked),
@@ -63,14 +66,15 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="exp", button_clicked=self.button_clicked),
                         ActionButton(text="!", button_clicked=self.button_clicked),
                         ActionButton(text="|x|", button_clicked=self.button_clicked),
-                    ]
+                    ],
+                    visible=self.show_extra_buttons
                 ),
                 ft.Row(
                     controls=[
                         ExtraActionButton(text="AC", button_clicked=self.button_clicked),
                         ExtraActionButton(text="CE", button_clicked=self.button_clicked),  
-                        ExtraActionButton(text="⬅", button_clicked=self.button_clicked),  
-                        
+                        ExtraActionButton(text="←", button_clicked=self.button_clicked),  
+                        ExtraActionButton(text="↑", button_clicked=self.button_clicked),
                     ]
                 ),
                 ft.Row(
@@ -125,12 +129,17 @@ class CalculatorApp(ft.Container):
         elif data == "CE":  #apaga o que foi inserido
             self.result.value = "0"
         
-        elif data == "⬅️":  
+        elif data == "←":  
             if self.result.value and self.result.value != "0":
                 self.result.value = self.result.value[:-1] #elimina ultimo caractere
                 self.expression = self.expression[:-1]  #elimina da expressão
                 if not self.result.value:
                     self.result.value = "0"
+        
+        elif data == "↑": 
+            self.show_extra_buttons = not self.show_extra_buttons
+            self.content.controls[2].visible = self.show_extra_buttons
+            self.update()
                     
         elif data in ("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."):
             if self.last_result is not None:  # Se houver um resultado anterior
@@ -211,6 +220,13 @@ class CalculatorApp(ft.Container):
                 num = int(self.result.value.replace(" ", ""))
                 result = math.factorial(num)
                 self.result.value = self.format_number(str(result))
+            except:
+                self.result.value = "Error"
+                
+        elif data == "|x|":
+            try:
+                result = abs(float(self.result.value.replace(" ", "")))
+                self.result.value = self.format_number(str(round(result, 2)))
             except:
                 self.result.value = "Error"
 
