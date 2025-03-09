@@ -205,6 +205,14 @@ class CalculatorApp(ft.Container):
                 self.result.value = self.format_number(str(round(result, 2)))
             except:
                 self.result.value = "Error"
+                
+        elif data == "!":
+            try:
+                num = int(self.result.value.replace(" ", ""))
+                result = math.factorial(num)
+                self.result.value = self.format_number(str(result))
+            except:
+                self.result.value = "Error"
 
         self.update_expression_display()
         
