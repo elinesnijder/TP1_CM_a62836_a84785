@@ -111,6 +111,13 @@ class CalculatorApp(ft.Container):
             self.result.value = "0"
             self.reset()
 
+        elif data == "⬅️":  
+            if self.result.value and self.result.value != "0":
+                self.result.value = self.result.value[:-1] #elimina ultimo caractere
+                self.expression = self.expression[:-1]  #elimina da expressão
+                if not self.result.value:
+                    self.result.value = "0"
+                    
         elif data in ("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."):
             if self.last_result is not None:  # Se houver um resultado anterior
                 self.result.value = data  # Reinicia com o novo número
