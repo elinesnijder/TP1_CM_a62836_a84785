@@ -1,4 +1,5 @@
 import flet as ft
+import re
 
 class CalcButton(ft.ElevatedButton):
     def __init__(self, text, button_clicked, expand=2):
@@ -153,19 +154,31 @@ class CalculatorApp(ft.Container):
 
         self.update_expression_display()
         
+
+
     def format_number(self, number_str):
         try:
-            if "." in number_str:
-                int_part, decimal_part = number_str.split(".")
-                formatted_int = f"{int(int_part):,}".replace(",", " ")
-                return f"{formatted_int}.{decimal_part}"
-            else:
-                return f"{int(number_str):,}".replace(",", " ")
+            #remover espaços para nao haver erro
+            number_str = number_str.replace(" ", "")
+
+            #encontrar os numeros na expressao
+            def format_match(match):
+                num = match.group()
+                if "." in num:  #numeros deciamsi
+                    int_part, decimal_part = num.split(".")
+                    formatted_int = f"{int(int_part):,}".replace(",", " ")
+                    return f"{formatted_int}.{decimal_part}"
+                else:  #numeros inteiros
+                    return f"{int(num):,}".replace(",", " ")
+
+            #formatação nos numeors todos
+            formatted_expression = re.sub(r"-?\d+\.?\d*", format_match, number_str)
+            return formatted_expression
         except ValueError:
             return number_str
 
     def update_expression_display(self):
-        self.expression_text.value = self.expression
+        self.expression_text.value = self.format_number(self.expression)
         self.update()
 
     def reset(self):
