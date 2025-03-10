@@ -192,7 +192,9 @@ class CalculatorApp(ft.Container):
                 result = eval(self.expression.replace(" ", ""))
                 self.result.value = self.format_number(str(round(result, 2)))
                 self.last_result = result
-                self.history_list.controls.append(ft.Text(f"{self.expression} = {self.result.value}"))
+                if len(self.history_list.controls) >= 5:
+                    self.history_list.controls.pop(0)
+                self.history_list.controls.append(ft.Text(f"{self.expression} = {self.result.value}", color=ft.colors.GREY))
                 self.update()
             except:
                 self.result.value = "Error"
