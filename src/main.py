@@ -309,6 +309,12 @@ class CalculatorApp(ft.Container):
     def saving_history(self):
         history_data = [entry.value for entry in self.history_list.controls]
         self.page.client_storage.set("calc_history", history_data)
+    
+    def load_history(self):
+        storage_history = self.page.client_storage.get("calc_history")
+        if storage_history:
+            for index, entry in enumerate(storage_history, start=1):
+                self.add_to_history(entry, save=False)
 
     def format_number(self, number_str):
         try:
