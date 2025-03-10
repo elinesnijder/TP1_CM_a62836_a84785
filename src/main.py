@@ -341,7 +341,7 @@ def main(page: ft.Page):
     page.title = "Calc App"
     page.window_resizable = False
     page.window_width = 400  # Ajustando largura para iOS
-    page.window_height = 700  # Ajustando altura para iOS
+    page.window_height = 600  # Ajustando altura para iOS
     page.padding = 0
     page.spacing = 0
     page.horizontal_alignment = "center"
@@ -354,7 +354,6 @@ def main(page: ft.Page):
         content=calc, 
         expand=True,
     )
-
     # add application's root control to the page
     page.add(scroll_container)
 
