@@ -305,6 +305,7 @@ class CalculatorApp(ft.Container):
     def delete_history_entry(self, entry):
         self.history_list.controls.remove(entry)
         self.update()
+        print(f"Item do histórico mais antigo excluído com sucesso. -> {entry}")
 
     def copy_to_clipboard(self, text):
         self.page.set_clipboard(text)
@@ -313,9 +314,11 @@ class CalculatorApp(ft.Container):
     def save_history(self):
         history_data = [entry.controls[2].value for entry in self.history_list.controls]
         self.page.client_storage.set("calc_history", history_data)
+        print("Histórico salvo com sucesso!", history_data)
     
     def load_history(self):
         storage_history = self.page.client_storage.get("calc_history")
+        print("Histórico carregado!")
         if storage_history:
             for entry_text in storage_history:
                 if "=" in entry_text:
