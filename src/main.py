@@ -218,7 +218,6 @@ class CalculatorApp(ft.Container):
                 self.result.value = self.format_number(str(round(result, 2)))
                 self.last_result = result
                 self.add_to_history(self.expression_text.value, self.result.value)
-                self.update()
             except:
                 self.result.value = "Error"
                 self.last_result = None
