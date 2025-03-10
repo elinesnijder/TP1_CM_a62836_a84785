@@ -288,7 +288,7 @@ class CalculatorApp(ft.Container):
          
     def add_to_history(self, expression, result):
             if len(self.history_list.controls) >= 10:
-                self.history_list.controls.pop(0)
+                self.history_list.controls.pop(-1)
             entry = HistoryEntry(
                 self.index_counter, expression, result,
                 lambda e: self.delete_history_entry(entry),
