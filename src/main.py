@@ -306,6 +306,9 @@ class CalculatorApp(ft.Container):
         self.page.set_clipboard(text)
         print(f"Copiado para área de transferência: {text}")
 
+    def saving_history(self):
+        history_data = [entry.value for entry in self.history_list.controls]
+        self.page.client_storage.set("calc_history", history_data)
 
     def format_number(self, number_str):
         try:
