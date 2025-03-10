@@ -59,7 +59,6 @@ class CalculatorApp(ft.Container):
             controls=[
                 ft.Row(controls=[self.expression_text], alignment="end"),
                 ft.Row(controls=[self.result], alignment="end"),
-                ft.Row(controls=[self.history_list]),
                 #row de botoes extra
                 ft.Row(
                     controls=[
@@ -78,7 +77,6 @@ class CalculatorApp(ft.Container):
                         ExtraActionButton(text="CE", button_clicked=self.button_clicked),  
                         ExtraActionButton(text="←", button_clicked=self.button_clicked),  
                         ExtraActionButton(text="↑", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="H", button_clicked=self.button_clicked),
                     ]
                 ),
                 ft.Row(
@@ -119,7 +117,10 @@ class CalculatorApp(ft.Container):
                         DigitButton(text=".", button_clicked=self.button_clicked),
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
-                ),
+                ),       
+                ft.Row(
+                    controls=[self.history_list], alignment="end"),
+                    ExtraActionButton(text="🕒", button_clicked=self.button_clicked),
             ]
         )
 
@@ -253,13 +254,11 @@ class CalculatorApp(ft.Container):
                 self.result.value = self.format_number(str(round(result, 2)))
             except:
                 self.result.value = "Error"
-        elif data == "H":
+        elif data == "🕒":
             self.history_list.visible = not self.history_list.visible
             self.update()
 
         self.update_expression_display()
-        
-
 
     def format_number(self, number_str):
         try:
