@@ -288,17 +288,19 @@ class CalculatorApp(ft.Container):
         self.history_container.visible = not self.history_container.visible
         self.update()   
          
-    def add_to_history(self, expression, result):
-            if len(self.history_list.controls) >= 10:
-                self.history_list.controls.pop(0)
-            entry = HistoryEntry(
-                self.index_counter, expression, result,
-                lambda e: self.delete_history_entry(entry),
-                self.copy_to_clipboard
-            )
-            self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
-            self.index_counter += 1
-            self.update()
+    def add_to_history(self, expression, result, save=True):
+        if len(self.history_list.controls) >= 10:
+            self.history_list.controls.pop(-1)
+        entry = HistoryEntry(
+            self.index_counter, expression, result,
+            lambda e: self.delete_history_entry(entry),
+            self.copy_to_clipboard
+        )
+        self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
+        self.index_counter += 1
+        if save:
+            self.save_history()
+        self.update()
 
     def delete_history_entry(self, entry):
         self.history_list.controls.remove(entry)
