@@ -2,6 +2,7 @@ import flet as ft
 import math
 import re
 from datetime import datetime
+import time
 
 class HistoryEntry(ft.Row):
     def __init__(self, index, expression, result, delete_callback, copy_callback):
@@ -287,7 +288,7 @@ class CalculatorApp(ft.Container):
     def toggle_history(self, e):
         self.history_container.visible = not self.history_container.visible
         self.update()   
-         
+        
     def add_to_history(self, expression, result, save=True):
         if len(self.history_list.controls) >= 10:
             self.history_list.controls.pop(-1)
@@ -356,6 +357,7 @@ class CalculatorApp(ft.Container):
 
 def main(page: ft.Page):
     page.title = "Calc App"
+    page.favicon = "assets/calculator.png"
     page.window_resizable = False
     page.window_width = 400  # Ajustando largura para iOS
     page.window_height = 600  # Ajustando altura para iOS
@@ -364,15 +366,31 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.scroll = "adaptive"
-    # create application instance
-    calc = CalculatorApp(page)
     
-    scroll_container = ft.Container(
-        content=calc, 
+    
+    loading_container = ft.Container(
+        content=ft.Column(
+            [
+                ft.Image(src="assets/icons/loading-animation.png", width=100, height=100),
+                ft.Text("Carregando...", size=16, color=ft.colors.GREY)
+            ],
+            alignment="center",
+            horizontal_alignment="center",
+        ),
+        alignment=ft.alignment.center,
         expand=True,
     )
-    # add application's root control to the page
-    page.add(scroll_container)
 
+    page.add(loading_container)
+    page.update()
 
-ft.app(target=main) 
+    def load_app():
+        time.sleep(2)  # Simula carregamento (2 segundos)
+        page.controls.clear()  # Remove a tela de carregamento
+        calc = CalculatorApp(page)
+        page.add(calc)  # Adiciona a calculadora
+        page.update()
+
+    page.run_thread(load_app)  # Executa sem travar a UI
+
+ft.app(target=main, assets_dir="assets")
