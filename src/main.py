@@ -288,18 +288,20 @@ class CalculatorApp(ft.Container):
     def toggle_history(self, e):
         self.history_container.visible = not self.history_container.visible
         self.update()   
-         
-    def add_to_history(self, expression, result):
-            if len(self.history_list.controls) >= 10:
-                self.history_list.controls.pop(-1)
-            entry = HistoryEntry(
-                self.index_counter, expression, result,
-                lambda e: self.delete_history_entry(entry),
-                self.copy_to_clipboard
-            )
-            self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
-            self.index_counter += 1
-            self.update()
+        
+    def add_to_history(self, expression, result, save=True):
+        if len(self.history_list.controls) >= 10:
+            self.history_list.controls.pop(-1)
+        entry = HistoryEntry(
+            self.index_counter, expression, result,
+            lambda e: self.delete_history_entry(entry),
+            self.copy_to_clipboard
+        )
+        self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
+        self.index_counter += 1
+        if save:
+            self.save_history()
+        self.update()
 
     def delete_history_entry(self, entry):
         self.history_list.controls.remove(entry)
@@ -355,7 +357,7 @@ class CalculatorApp(ft.Container):
 
 def main(page: ft.Page):
     page.title = "Calc App"
-    page.favicon = "assets/calculator.png"
+    page.favicon = "assets/icon.png"
     page.window_resizable = False
     page.window_width = 400  # Ajustando largura para iOS
     page.window_height = 600  # Ajustando altura para iOS
@@ -364,16 +366,22 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.scroll = "adaptive"
-    # create application instance
-    calc = CalculatorApp()
     
-    scroll_container = ft.Container(
-        content=calc, 
+    
+    loading_container = ft.Container(
+        content=ft.Column(
+            [
+                ft.Image(src="assets/icons/loading-animation.png", width=100, height=100),
+                ft.Text("Carregando...", size=16, color=ft.colors.GREY)
+            ],
+            alignment="center",
+            horizontal_alignment="center",
+        ),
+        alignment=ft.alignment.center,
         expand=True,
     )
 
     page.add(loading_container)
-    page.update()
 
     def load_app():
         time.sleep(2)  # Simula carregamento (2 segundos)
@@ -384,4 +392,4 @@ def main(page: ft.Page):
 
     page.run_thread(load_app)  # Executa sem travar a UI
 
-ft.app(target=main, assets_dir="assets")
+ft.app(target=main, view=ft.WEB_BROWSER, host="0.0.0.0", port=8080)
