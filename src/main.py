@@ -49,8 +49,9 @@ class ExtraActionButton(CalcButton):
 
 class CalculatorApp(ft.Container):
     # application's root control (i.e. "view") containing all other controls
-    def __init__(self):
+    def __init__(self, page):
         super().__init__()
+        self.page = page
         self.reset()
         self.result = ft.Text(value="0", color=ft.colors.BLACK, size=75)
         self.expression_text = ft.Text(value="", color=ft.colors.GREY, size=25) #campo em cima
@@ -65,7 +66,7 @@ class CalculatorApp(ft.Container):
             border_radius=10,
             visible=False  # Escondido inicialmente
         )
-        
+        self.load_history()
         self.width = "100%"
         self.height = "100%"
         self.bgcolor = ft.colors.GREY_50
@@ -222,6 +223,7 @@ class CalculatorApp(ft.Container):
                 self.result.value = "Error"
                 self.last_result = None
             self.update_expression_display()
+            self.update()
 
         elif data == "%":
             try:
@@ -286,26 +288,42 @@ class CalculatorApp(ft.Container):
         self.history_container.visible = not self.history_container.visible
         self.update()   
          
-    def add_to_history(self, expression, result):
-            if len(self.history_list.controls) >= 10:
-                self.history_list.controls.pop(-1)
-            entry = HistoryEntry(
-                self.index_counter, expression, result,
-                lambda e: self.delete_history_entry(entry),
-                self.copy_to_clipboard
-            )
-            self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
-            self.index_counter += 1
-            self.update()
+    def add_to_history(self, expression, result, save=True):
+        if len(self.history_list.controls) >= 10:
+            self.history_list.controls.pop(-1)
+        entry = HistoryEntry(
+            self.index_counter, expression, result,
+            lambda e: self.delete_history_entry(entry),
+            self.copy_to_clipboard
+        )
+        self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
+        self.index_counter += 1
+        if save:
+            self.save_history()
+        self.update()
 
     def delete_history_entry(self, entry):
         self.history_list.controls.remove(entry)
         self.update()
+        print(f"Item do histórico mais antigo excluído com sucesso. -> {entry}")
 
     def copy_to_clipboard(self, text):
         self.page.set_clipboard(text)
         print(f"Copiado para área de transferência: {text}")
 
+    def save_history(self):
+        history_data = [entry.controls[2].value for entry in self.history_list.controls]
+        self.page.client_storage.set("calc_history", history_data)
+        print("Histórico salvo com sucesso!", history_data)
+    
+    def load_history(self):
+        storage_history = self.page.client_storage.get("calc_history")
+        print("Histórico carregado!")
+        if storage_history:
+            for entry_text in storage_history:
+                if "=" in entry_text:
+                    expression, result = entry_text.split(" = ")
+                    self.add_to_history(expression, result, save=False)
 
     def format_number(self, number_str):
         try:
@@ -347,7 +365,7 @@ def main(page: ft.Page):
     page.vertical_alignment = "center"
     page.scroll = "adaptive"
     # create application instance
-    calc = CalculatorApp()
+    calc = CalculatorApp(page)
     
     scroll_container = ft.Container(
         content=calc, 
