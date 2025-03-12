@@ -288,20 +288,18 @@ class CalculatorApp(ft.Container):
     def toggle_history(self, e):
         self.history_container.visible = not self.history_container.visible
         self.update()   
-        
-    def add_to_history(self, expression, result, save=True):
-        if len(self.history_list.controls) >= 10:
-            self.history_list.controls.pop(-1)
-        entry = HistoryEntry(
-            self.index_counter, expression, result,
-            lambda e: self.delete_history_entry(entry),
-            self.copy_to_clipboard
-        )
-        self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
-        self.index_counter += 1
-        if save:
-            self.save_history()
-        self.update()
+         
+    def add_to_history(self, expression, result):
+            if len(self.history_list.controls) >= 10:
+                self.history_list.controls.pop(-1)
+            entry = HistoryEntry(
+                self.index_counter, expression, result,
+                lambda e: self.delete_history_entry(entry),
+                self.copy_to_clipboard
+            )
+            self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
+            self.index_counter += 1
+            self.update()
 
     def delete_history_entry(self, entry):
         self.history_list.controls.remove(entry)
@@ -366,18 +364,11 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.scroll = "adaptive"
+    # create application instance
+    calc = CalculatorApp()
     
-    
-    loading_container = ft.Container(
-        content=ft.Column(
-            [
-                ft.Image(src="assets/icons/loading-animation.png", width=100, height=100),
-                ft.Text("Carregando...", size=16, color=ft.colors.GREY)
-            ],
-            alignment="center",
-            horizontal_alignment="center",
-        ),
-        alignment=ft.alignment.center,
+    scroll_container = ft.Container(
+        content=calc, 
         expand=True,
     )
 
