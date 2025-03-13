@@ -373,7 +373,7 @@ class CalculatorApp(ft.Container):
 
 
 def main(page: ft.Page):
-    page.title = "Calc App"
+    page.title = "The Best Calculator"
     page.window_resizable = False
     page.window_width = 400  # Ajustando largura para iOS
     page.window_height = 600  # Ajustando altura para iOS
