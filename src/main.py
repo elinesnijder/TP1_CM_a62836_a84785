@@ -6,8 +6,7 @@ from datetime import datetime
 
 class HistoryEntry(ft.Row):
 
-    def __init__(self, index, expression, result, delete_callback,
-                 copy_callback):
+    def __init__(self, index, expression, result, delete_callback,copy_callback):
         super().__init__()
         self.controls = [
             ft.Text(f"{index}.", size=10, color=ft.colors.GREY),
@@ -16,8 +15,7 @@ class HistoryEntry(ft.Row):
                     color=ft.colors.GREY),
             ft.Text(f"{expression} = {result}", size=10, color=ft.colors.GREY),
             ft.IconButton(icon=ft.icons.DELETE, on_click=delete_callback),
-            ft.IconButton(icon=ft.icons.CONTENT_COPY,
-                          on_click=lambda e: copy_callback(result))
+            ft.IconButton(icon=ft.icons.CONTENT_COPY,on_click=lambda e: copy_callback(result))
         ]
 
 
@@ -65,8 +63,7 @@ class CalculatorApp(ft.Container):
         self.page = page
         self.reset()
         self.result = ft.Text(value="0", color=ft.colors.BLACK, size=75)
-        self.expression_text = ft.Text(value="", color=ft.colors.GREY,
-                                       size=25)  #campo em cima
+        self.expression_text = ft.Text(value="", color=ft.colors.GREY,size=25)  #campo em cima
 
         self.history = []  #armazenamento do histórico
         self.history_list = ft.ListView(controls=[], expand=True)
@@ -96,32 +93,21 @@ class CalculatorApp(ft.Container):
                 ft.Row(controls=[
                     ActionButton(text="√", button_clicked=self.button_clicked),
                     ActionButton(text="^", button_clicked=self.button_clicked),
-                    ActionButton(text="log",
-                                 button_clicked=self.button_clicked),
-                    ActionButton(text="exp",
-                                 button_clicked=self.button_clicked),
+                    ActionButton(text="log",button_clicked=self.button_clicked),
+                    ActionButton(text="exp",button_clicked=self.button_clicked),
                     ActionButton(text="!", button_clicked=self.button_clicked),
-                    ActionButton(text="|x|",
-                                 button_clicked=self.button_clicked),
-                ],
-                       visible=self.show_extra_buttons),
+                    ActionButton(text="|x|",button_clicked=self.button_clicked),
+                ], visible=self.show_extra_buttons),
                 ft.Row(controls=[
-                    ExtraActionButton(text="AC",
-                                      button_clicked=self.button_clicked),
-                    ExtraActionButton(text="CE",
-                                      button_clicked=self.button_clicked),
-                    ExtraActionButton(text="←",
-                                      button_clicked=self.button_clicked),
-                    ExtraActionButton(text="↑",
-                                      button_clicked=self.button_clicked),
+                    ExtraActionButton(text="AC",button_clicked=self.button_clicked),
+                    ExtraActionButton(text="CE",button_clicked=self.button_clicked),
+                    ExtraActionButton(text="←",button_clicked=self.button_clicked),
+                    ExtraActionButton(text="↑",button_clicked=self.button_clicked),
                 ]),
                 ft.Row(controls=[
-                    ExtraActionButton(text="(",
-                                      button_clicked=self.button_clicked),
-                    ExtraActionButton(text=")",
-                                      button_clicked=self.button_clicked),
-                    ExtraActionButton(text="%",
-                                      button_clicked=self.button_clicked),
+                    ExtraActionButton(text="(",button_clicked=self.button_clicked),
+                    ExtraActionButton(text=")",button_clicked=self.button_clicked),
+                    ExtraActionButton(text="%",button_clicked=self.button_clicked),
                     ActionButton(text="/", button_clicked=self.button_clicked),
                 ]),
                 ft.Row(controls=[
@@ -152,10 +138,8 @@ class CalculatorApp(ft.Container):
                 self.history_container,
                 #row de botoes extra
                 ft.Row(controls=[
-                    ft.IconButton(icon=ft.icons.HISTORY,
-                                  on_click=self.toggle_history)
-                ],
-                       alignment="center"),
+                    ft.IconButton(icon=ft.icons.HISTORY, on_click=self.toggle_history)
+                ], alignment="center"),
             ],
             scroll="adaptive",
             expand=True,
@@ -173,8 +157,7 @@ class CalculatorApp(ft.Container):
 
         elif data == "←":
             if self.result.value and self.result.value != "0":
-                self.result.value = self.result.value[:
-                                                      -1]  #elimina ultimo caractere
+                self.result.value = self.result.value[:-1]  #elimina ultimo caractere
                 self.expression = self.expression[:-1]  #elimina da expressão
                 if not self.result.value:
                     self.result.value = "0"
@@ -305,9 +288,7 @@ class CalculatorApp(ft.Container):
     def add_to_history(self, expression, result, save=True):
         if len(self.history_list.controls) >= 10:
             self.history_list.controls.pop(-1)
-        entry = HistoryEntry(self.index_counter, expression, result,
-                             lambda e: self.delete_history_entry(entry),
-                             self.copy_to_clipboard)
+        entry = HistoryEntry(self.index_counter, expression, result, lambda e: self.delete_history_entry(entry), self.copy_to_clipboard)
         self.history_list.controls.insert(
             0, entry)  #altera a ordem para o mais recente estar primeiro
         self.index_counter += 1
@@ -357,8 +338,7 @@ class CalculatorApp(ft.Container):
                     return f"{int(num):,}".replace(",", " ")
 
             #formatação nos numeors todos
-            formatted_expression = re.sub(r"-?\d+\.?\d*", format_match,
-                                          number_str)
+            formatted_expression = re.sub(r"-?\d+\.?\d*", format_match, number_str)
             return formatted_expression
         except ValueError:
             return number_str
