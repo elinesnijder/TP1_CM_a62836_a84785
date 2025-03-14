@@ -1,6 +1,5 @@
 import flet as ft
 
-
 class CalcButton(ft.ElevatedButton):
     def __init__(self, text, button_clicked, expand=2):
         super().__init__(            
@@ -40,23 +39,24 @@ class CalculatorApp(ft.Container):
         super().__init__()
         self.reset()
         self.result = ft.Text(value="0", color=ft.colors.BLACK, size=75)
+        self.expression_text = ft.Text(value="", color=ft.colors.BLACK, size=25) #campo em cima
         self.width = "100%"
         self.height = "100%"
         self.bgcolor = ft.colors.GREY_50
         self.border_radius = ft.border_radius.all(20)
         self.padding = 20
         self.alignment = ft.alignment.center
+        self.expression = ""
+        self.last_result = None
+        
         self.content = ft.Column(
             controls=[
+                ft.Row(controls=[self.expression_text], alignment="end"),
                 ft.Row(controls=[self.result], alignment="end"),
                 ft.Row(
                     controls=[
-                        ExtraActionButton(
-                            text="AC", button_clicked=self.button_clicked
-                        ),
-                        ExtraActionButton(
-                            text="+/-", button_clicked=self.button_clicked
-                        ),
+                        ExtraActionButton(text="AC", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="+/-", button_clicked=self.button_clicked),
                         ExtraActionButton(text="%", button_clicked=self.button_clicked),
                         ActionButton(text="/", button_clicked=self.button_clicked),
                     ]
@@ -87,9 +87,7 @@ class CalculatorApp(ft.Container):
                 ),
                 ft.Row(
                     controls=[
-                        DigitButton(
-                            text="0", expand=2, button_clicked=self.button_clicked
-                        ),
+                        DigitButton(text="0", expand=2, button_clicked=self.button_clicked),
                         DigitButton(text=".", button_clicked=self.button_clicked),
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
@@ -105,72 +103,61 @@ class CalculatorApp(ft.Container):
             self.reset()
 
         elif data in ("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."):
-            if self.result.value == "0" or self.new_operand == True:
+            if self.last_result is not None:  # Se houver um resultado anterior
+                self.result.value = data  # Reinicia com o novo número
+                self.expression = data
+                self.last_result = None  
+            elif self.result.value == "0" or self.new_operand == True:
                 self.result.value = data
+                self.expression = data
                 self.new_operand = False
             else:
-                self.result.value = self.result.value + data
+                self.result.value += data
+                self.expression += data
 
-        elif data in ("+", "-", "*", "/"):
-            self.result.value = self.calculate(
-                self.operand1, float(self.result.value), self.operator
-            )
-            self.operator = data
-            if self.result.value == "Error":
-                self.operand1 = "0"
-            else:
-                self.operand1 = float(self.result.value)
-            self.new_operand = True
+        elif data in ("+", "-", "*", "/", "(", ")"):
+            if self.last_result is not None:  # Se houver um resultado antes
+                self.expression = self.result.value  # Continua do último resultado
+                self.last_result = None 
+            self.result.value += data
+            self.expression += data
+            self.new_operand = False
 
-        elif data in ("="):
-            self.result.value = self.calculate(
-                self.operand1, float(self.result.value), self.operator
-            )
-            self.reset()
+        elif data == "=":
+            try:
+                result = eval(self.expression)
+                self.result.value = str(round(result, 2))
+                self.last_result = result
+            except:
+                self.result.value = "Error"
+                self.last_result = None
+            self.update_expression_display()
 
-        elif data in ("%"):
-            self.result.value = float(self.result.value) / 100
-            self.reset()
+        elif data == "%":
+            try:
+                result = eval(self.expression) / 100
+                self.result.value = str(round(result, 2))
+            except:
+                self.result.value = "Error"
+            self.update_expression_display()
 
-        elif data in ("+/-"):
-            if float(self.result.value) > 0:
-                self.result.value = "-" + str(self.result.value)
+        elif data == "+/-":
+            try:
+                result = -float(self.result.value)
+                self.result.value = str(round(result, 2)) #arredondamento
+                self.expression = self.result.value
+            except:
+                self.result.value = "Error"
 
-            elif float(self.result.value) < 0:
-                self.result.value = str(
-                    self.format_number(abs(float(self.result.value)))
-                )
+        self.update_expression_display()
 
+    def update_expression_display(self):
+        self.expression_text.value = self.expression
         self.update()
 
-    def format_number(self, num):
-        if num % 1 == 0:
-            return int(num)
-        else:
-            return num
-
-    def calculate(self, operand1, operand2, operator):
-
-        if operator == "+":
-            return self.format_number(operand1 + operand2)
-
-        elif operator == "-":
-            return self.format_number(operand1 - operand2)
-
-        elif operator == "*":
-            return self.format_number(operand1 * operand2)
-
-        elif operator == "/":
-            if operand2 == 0:
-                return "Error"
-            else:
-                return self.format_number(operand1 / operand2)
-
     def reset(self):
-        self.operator = "+"
-        self.operand1 = 0
+        self.expression = ""
         self.new_operand = True
-
 
 def main(page: ft.Page):
     page.title = "Calc App"
@@ -188,4 +175,4 @@ def main(page: ft.Page):
     page.add(calc)
 
 
-ft.app(target=main)
+ft.app(target=main) 
