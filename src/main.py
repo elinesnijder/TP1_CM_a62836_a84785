@@ -1,7 +1,19 @@
 import flet as ft
 import math
 import re
+from datetime import datetime
 
+class HistoryEntry(ft.Row):
+    def __init__(self, index, expression, result, delete_callback, copy_callback):
+        super().__init__()
+        self.controls = [
+            ft.Text(f"{index}.", size=10, color=ft.colors.GREY),
+            ft.Text(datetime.now().strftime("On %Y-%m-%d, at %H:%M:%S"), size=10, color=ft.colors.GREY),
+            ft.Text(f"{expression} = {result}", size=10, color=ft.colors.GREY),
+            ft.IconButton(icon=ft.icons.DELETE, on_click=delete_callback),
+            ft.IconButton(icon=ft.icons.CONTENT_COPY, on_click=lambda e: copy_callback(result))
+        ]
+        
 class CalcButton(ft.ElevatedButton):
     def __init__(self, text, button_clicked, expand=2):
         super().__init__(            
@@ -41,7 +53,19 @@ class CalculatorApp(ft.Container):
         super().__init__()
         self.reset()
         self.result = ft.Text(value="0", color=ft.colors.BLACK, size=75)
-        self.expression_text = ft.Text(value="", color=ft.colors.BLACK, size=25) #campo em cima
+        self.expression_text = ft.Text(value="", color=ft.colors.GREY, size=25) #campo em cima
+       
+        self.history = [] #armazenamento do histórico
+        self.history_list = ft.ListView(controls=[], expand=True)
+        self.index_counter = 1
+        self.history_container = ft.Container(
+            content=self.history_list,
+            height=200,
+            bgcolor=ft.colors.WHITE,
+            border_radius=10,
+            visible=False  # Escondido inicialmente
+        )
+        
         self.width = "100%"
         self.height = "100%"
         self.bgcolor = ft.colors.GREY_50
@@ -50,14 +74,12 @@ class CalculatorApp(ft.Container):
         self.alignment = ft.alignment.center
         self.expression = ""
         self.last_result = None
-        
         self.show_extra_buttons = False #botoes extras
         
         self.content = ft.Column(
             controls=[
                 ft.Row(controls=[self.expression_text], alignment="end"),
                 ft.Row(controls=[self.result], alignment="end"),
-                #row de botoes extra
                 ft.Row(
                     controls=[
                         ActionButton(text="√", button_clicked=self.button_clicked),
@@ -115,8 +137,16 @@ class CalculatorApp(ft.Container):
                         DigitButton(text=".", button_clicked=self.button_clicked),
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
+                ),    
+                self.history_container,
+                #row de botoes extra
+                ft.Row(
+                    controls=[ft.IconButton(icon=ft.icons.HISTORY, on_click=self.toggle_history)],
+                    alignment="center" 
                 ),
-            ]
+            ],
+            scroll="adaptive", 
+            expand=True,
         )
 
     def button_clicked(self, e):
@@ -187,6 +217,7 @@ class CalculatorApp(ft.Container):
                 result = eval(self.expression.replace(" ", ""))
                 self.result.value = self.format_number(str(round(result, 2)))
                 self.last_result = result
+                self.add_to_history(self.expression_text.value, self.result.value)
             except:
                 self.result.value = "Error"
                 self.last_result = None
@@ -247,9 +278,33 @@ class CalculatorApp(ft.Container):
                 self.result.value = self.format_number(str(round(result, 2)))
             except:
                 self.result.value = "Error"
+        self.update()
 
         self.update_expression_display()
-        
+    
+    def toggle_history(self, e):
+        self.history_container.visible = not self.history_container.visible
+        self.update()   
+         
+    def add_to_history(self, expression, result):
+            if len(self.history_list.controls) >= 10:
+                self.history_list.controls.pop(-1)
+            entry = HistoryEntry(
+                self.index_counter, expression, result,
+                lambda e: self.delete_history_entry(entry),
+                self.copy_to_clipboard
+            )
+            self.history_list.controls.insert(0,entry) #altera a ordem para o mais recente estar primeiro
+            self.index_counter += 1
+            self.update()
+
+    def delete_history_entry(self, entry):
+        self.history_list.controls.remove(entry)
+        self.update()
+
+    def copy_to_clipboard(self, text):
+        self.page.set_clipboard(text)
+        print(f"Copiado para área de transferência: {text}")
 
 
     def format_number(self, number_str):
@@ -290,11 +345,16 @@ def main(page: ft.Page):
     page.spacing = 0
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
+    page.scroll = "adaptive"
     # create application instance
     calc = CalculatorApp()
-
+    
+    scroll_container = ft.Container(
+        content=calc, 
+        expand=True,
+    )
     # add application's root control to the page
-    page.add(calc)
+    page.add(scroll_container)
 
 
 ft.app(target=main) 
